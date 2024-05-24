@@ -33,12 +33,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_18
+        targetCompatibility = JavaVersion.VERSION_18
     }
 
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "18"
     }
     buildFeatures {
         compose = true
@@ -117,6 +117,16 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     testImplementation("com.google.truth:truth:1.1.3")
 
+    testImplementation ("org.mockito:mockito-core:4.11.0")
+    testImplementation ("org.mockito:mockito-inline:4.11.0") // Add this for inline mocks
+
+    // Kotlin Coroutines testing
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+
+    // AndroidX and JUnit dependencies
+    testImplementation ("androidx.arch.core:core-testing:2.1.0")
+    testImplementation ("junit:junit:4.13.2")
+    testImplementation ("org.jetbrains.kotlin:kotlin-test-junit:1.7.10")
 
 
     // Preferences DataStore

@@ -12,14 +12,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WeatherViewModel
-@Inject constructor(private val repository: WeatherRepositoryImpl,
-): ViewModel() {
+@Inject constructor(private val repository: WeatherRepositoryImpl) : ViewModel() {
 
-    var weatherLiveData: LiveData<Resource<WeatherDto>> =
-        repository.weatherLiveData
+    // LiveData to hold the weather data, which can be observed by the UI
+    var weatherLiveData: LiveData<Resource<WeatherDto>> = repository.weatherLiveData
 
-    fun fetchWeatherData(city:String) {
+    // Function to fetch weather data for a given city
+    fun fetchWeatherData(city: String) {
         viewModelScope.launch {
+            // Launch a coroutine to fetch the weather data from the repository
             repository.getWeatherData(city)
         }
     }

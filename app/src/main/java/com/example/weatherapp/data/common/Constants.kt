@@ -23,7 +23,4 @@ object Constants {
     const val LAST_SAVED_CITY_KEY = "last_searched_city"
     const val MY_SHARED_PREF_KEY = "MySharedPref"
 
-    //Location, Default
-    const val LAT: Double = 44.34
-    const val LONG: Double = 10.99
 }

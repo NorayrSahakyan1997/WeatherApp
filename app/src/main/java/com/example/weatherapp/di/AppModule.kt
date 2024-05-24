@@ -21,26 +21,28 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+    // Provides a singleton instance of WeatherApi using Retrofit for making network requests
     @Provides
     @Singleton
     fun provideWeatherApi(): WeatherApi {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(MoshiConverterFactory.create())
-            .build()
-            .create()
+            .baseUrl(BASE_URL) // Set the base URL for the API
+            .addConverterFactory(MoshiConverterFactory.create()) // Use Moshi for JSON conversion
+            .build() // Build the Retrofit instance
+            .create(WeatherApi::class.java) // Create the WeatherApi implementation
     }
 
+    // Provides a singleton instance of FusedLocationProviderClient for accessing location services
     @Provides
     @Singleton
     fun provideFusedLocationProviderClient(app: Application): FusedLocationProviderClient {
-        return LocationServices.getFusedLocationProviderClient(app)
+        return LocationServices.getFusedLocationProviderClient(app) // Get the FusedLocationProviderClient
     }
 
-
+    // Provides a singleton instance of SharedPreferences for storing key-value pairs
     @Provides
     @Singleton
     fun provideSharedPreferences(app: Application): SharedPreferences {
-        return app.getSharedPreferences(MY_SHARED_PREF_KEY, Context.MODE_PRIVATE)
+        return app.getSharedPreferences(MY_SHARED_PREF_KEY, Context.MODE_PRIVATE) // Get the SharedPreferences instance
     }
 }

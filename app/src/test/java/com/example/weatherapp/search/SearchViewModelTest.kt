@@ -1,15 +1,10 @@
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.weatherapp.data.remote.repository.SearchRepositoryImpl
 import com.example.weatherapp.presentation.screens.search.SearchViewModel
 import com.example.weatherapp.rule.CoroutineTestRule
 import com.example.weatherapp.rule.MainDispatcherRule
-import com.nhaarman.mockitokotlin2.whenever
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.*
 import org.junit.Before
 import org.junit.Rule
@@ -18,9 +13,7 @@ import org.junit.rules.TestRule
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.*
-import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.junit.MockitoRule
 
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
@@ -82,7 +75,7 @@ class SearchViewModelTest {
         viewModel.checkIfSavedCityAvailable()
 
         // Verify the LiveData is updated with the fetched city
-        verify(observer).onChanged("Los Angeles")
+        verify(observer).onChanged(city)
     }
 
     @Test

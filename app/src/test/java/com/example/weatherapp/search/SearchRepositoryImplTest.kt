@@ -53,7 +53,7 @@ class SearchRepositoryImplTest {
     @Test
     fun `getSavedCity returns saved city name`() = runTest {
         // Setup the mock to return a specific city name
-        `when`(sharedPreferences.getString(LAST_SAVED_CITY_KEY, null)).thenReturn("Los Angeles")
+        `when`(sharedPreferences.getString(LAST_SAVED_CITY_KEY, null)).thenReturn(city)
 
         // Call the method to test
         val city = searchRepository.getSavedCity()
@@ -111,7 +111,7 @@ class SearchRepositoryImplTest {
         `when`(location.latitude).thenReturn(34.0522)
         `when`(location.longitude).thenReturn(-118.2437)
         `when`(locationTracker.getCurrentLocation()).thenReturn(location)
-        `when`(locationTracker.getCityName(34.0522, -118.2437)).thenReturn("Los Angeles")
+        `when`(locationTracker.getCityName(34.0522, -118.2437)).thenReturn(city)
 
         // Call the method to test
         val city = searchRepository.fetchCurrentCity()

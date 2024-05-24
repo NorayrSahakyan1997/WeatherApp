@@ -48,6 +48,9 @@ class SearchViewModelTest {
     // ViewModel instance to test
     private lateinit var viewModel: SearchViewModel
 
+    private val city = "Los Angeles"
+
+
     @Before
     fun setUp() {
         // Initialize the ViewModel with the mocked repository
@@ -59,13 +62,13 @@ class SearchViewModelTest {
     @Test
     fun `initialization test - saved city available`() = runTest {
         // Setup the repository mock to return a saved city
-        `when`(repository.getSavedCity()).thenReturn("Los Angeles")
+        `when`(repository.getSavedCity()).thenReturn(city)
 
         // Call the method to test (checkIfSavedCityAvailable is called in init block)
         viewModel.checkIfSavedCityAvailable()
 
         // Verify the LiveData is updated with the saved city
-        verify(observer).onChanged("Los Angeles")
+        verify(observer).onChanged(city)
     }
 
     @Test
@@ -73,7 +76,7 @@ class SearchViewModelTest {
         // Setup the repository mock to return null for the saved city
         `when`(repository.getSavedCity()).thenReturn(null)
         // Setup the repository mock to return a current city
-        `when`(repository.fetchCurrentCity()).thenReturn("Los Angeles")
+        `when`(repository.fetchCurrentCity()).thenReturn(city)
 
         // Call the method to test (checkIfSavedCityAvailable is called in init block)
         viewModel.checkIfSavedCityAvailable()
@@ -85,22 +88,22 @@ class SearchViewModelTest {
     @Test
     fun `loadWeatherInfo test`() = runTest {
         // Setup the repository mock to return a current city
-        `when`(repository.fetchCurrentCity()).thenReturn("Los Angeles")
+        `when`(repository.fetchCurrentCity()).thenReturn(city)
 
         // Call the method to test
         viewModel.loadWeatherInfo()
 
         // Verify the LiveData is updated with the fetched city
-        verify(observer).onChanged("Los Angeles")
+        verify(observer).onChanged(city)
     }
 
     @Test
     fun `saveCityName test`() = runTest {
         // Call the method to test
-        viewModel.saveCityName("Los Angeles")
+        viewModel.saveCityName(city)
 
         // Verify the repository's saveCityName method is called with the correct argument
-        verify(repository).saveCityName("Los Angeles")
+        verify(repository).saveCityName(city)
     }
 
     @Test

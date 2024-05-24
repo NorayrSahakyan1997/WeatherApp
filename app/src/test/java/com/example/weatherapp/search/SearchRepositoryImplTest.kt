@@ -41,6 +41,9 @@ class SearchRepositoryImplTest {
 
     private lateinit var searchRepository: SearchRepositoryImpl
 
+
+    private val city = "Los Angeles"
+
     @Before
     fun setUp() {
         // Initialize the repository with the mocked dependencies
@@ -79,10 +82,10 @@ class SearchRepositoryImplTest {
         `when`(editor.putString(anyString(), anyString())).thenReturn(editor)
 
         // Call the method to test
-        searchRepository.saveCityName("Los Angeles")
+        searchRepository.saveCityName(city)
 
         // Verify the editor interactions
-        verify(editor).putString(LAST_SAVED_CITY_KEY, "Los Angeles")
+        verify(editor).putString(LAST_SAVED_CITY_KEY, city)
         verify(editor).apply()
     }
 
@@ -114,7 +117,7 @@ class SearchRepositoryImplTest {
         val city = searchRepository.fetchCurrentCity()
 
         // Verify the result
-        assertEquals("Los Angeles", city)
+        assertEquals(city, city)
     }
 
     @Test

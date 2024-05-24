@@ -46,10 +46,13 @@ class WeatherRepositoryImplTest {
 
     @Mock
     private lateinit var weatherDto: WeatherDto
-    private lateinit var repository: WeatherRepositoryImpl
 
     @Mock
     private lateinit var observer: Observer<Resource<WeatherDto>>
+
+    private lateinit var repository: WeatherRepositoryImpl
+
+
 
     private val city = "Los Angeles"
 

@@ -55,14 +55,8 @@ class WeatherRepositoryImplTest {
 
     @Before
     fun setUp() {
-        Dispatchers.setMain(Dispatchers.Unconfined)
         repository = WeatherRepositoryImpl(api)
         repository.weatherLiveData.observeForever(observer)
-    }
-
-    @After
-    fun tearDown() {
-        Dispatchers.resetMain()
     }
 
     @Test

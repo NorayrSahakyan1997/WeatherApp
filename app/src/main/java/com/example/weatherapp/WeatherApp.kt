@@ -1,6 +1,7 @@
 package com.example.weatherapp
 
 import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
 
-class WeatherApp:Application() {
-}
+@HiltAndroidApp
+class WeatherApp:Application()

@@ -1,13 +1,1 @@
-
-    private fun createGuideLines(): List<GuideLine> {
-        val guideLines: MutableList<GuideLine> = ArrayList()
-        val color = ContextCompat.getColor(context, R.color.common_color_sub_gray)
-        guideLines.add(
-            createGuideLine(
-                MID_MY_HEART_VALUE,
-                color,
-                context.getString(R.string.map_result_steady)
-            )
-        )
-        return guideLines
-    }
+- [ ] Currently working on a new design 1.3 which was updated on Friday , there appeared some new changes including some margins, paddings. Instead of having only steady, added better and worse states I the chart. Fixed some resource names which were put before. We have pointes in the expanded chart view, when clicking on them, it shows rectangular information view. Design was also changed in 1.3. There are still some minor changes connected with UI components which are still in progress, after finishing it I will start to investigate the test resources and start writing unit tests to cover the repository layer. 

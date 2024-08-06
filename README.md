@@ -1,40 +1,35 @@
-   internal class MyHeartDataRepositoryImpl(
-    private val dataSource: TrackerMapDataSource,
-) : MyHeartDataRepository {
-    override fun getMeasurementsFlow(
-        startTime: Long,
-        endTimeInChronologicalOrder: Boolean,
-        limit: Int?
-    ) = dataSource.getMeasurementsFlow(
-        startTime = startTime,
-        endTimeInChronologicalOrder = endTimeInChronologicalOrder,
-        limit = limit
-    )
+class MyHeartDataRepositoryTest {
 
-    override suspend fun hasDataForDate(utcStartTime: Long) =
-        dataSource.hasDataForDate(utcStartTime)
+    private val dataSource = mockk<TrackerMapDataSource>()
+    private lateinit var myHeartDataRepository: MyHeartDataRepositoryImpl
 
-    override fun isCompleteBaselineOrMeasurementEverCreatedFlow() =
-        dataSource.isCompleteBaselineOrMeasurementEverCreatedFlow()
 
-    override suspend fun resetBaseline() {
-        val lastEntry = dataSource.getLastEntry()
-        val currentTime = System.currentTimeMillis()
-        val timezoneOffset = TimeZone.getDefault().getOffset(currentTime)
-        val data = MapMeasurementEntity(
-            startTime = currentTime,
-            endTime = currentTime,
-            timeOffset = timezoneOffset.toLong(),
-            type = MapDataType.RESET_BASELINE,
-            measurement = null,
-        )
-        if (lastEntry?.type == MapDataType.RESET_BASELINE) {
-            dataSource.updateData(lastEntry.dataUuid, data)
-            return
-        }
-        dataSource.insertData(data)
+    @Before
+    fun setUp() {
+        myHeartDataRepository = MyHeartDataRepositoryImpl(dataSource = dataSource)
     }
 
-    override suspend fun deleteDataInDbWithIds(uuidList: List<String>) =
-        dataSource.deleteDataInDbWithIds(uuidList)
+    @Test
+    fun testResetBaseline() = runTest {
+        coEvery { dataSource.getLastEntry() } returns null
+        coEvery { dataSource.getLastEntry()?.type } returns null
+        coEvery { dataSource.insertData(any()) } returns HealthResultHolder.BaseResult(
+            STATUS_SUCCESSFUL,
+            1
+        )
+
+        myHeartDataRepository.resetBaseline()
+        coVerify { dataSource.getLastEntry() }
+        coVerify { dataSource.insertData(any()) }
+        confirmVerified(dataSource)
+    }
+
+    @Test
+    fun testDeleteDataInDbWithIds() = runTest {
+    }
+
+    @Test
+    fun testHasDataForDate() = runTest {
+
+    }
 }

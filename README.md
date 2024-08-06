@@ -1,11 +1,40 @@
-     <com.samsung.android.app.shealth.tracker.myheart.view.chart.TrackerBarView
-            android:id="@+id/barView"
-            android:layout_width="110dp"
-            android:layout_height="30dp"
-            android:layout_gravity="center"
-            android:layout_marginStart="10dp"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="@id/description"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/description"
-            app:layout_constraintTop_toTopOf="@id/description" />
+   internal class MyHeartDataRepositoryImpl(
+    private val dataSource: TrackerMapDataSource,
+) : MyHeartDataRepository {
+    override fun getMeasurementsFlow(
+        startTime: Long,
+        endTimeInChronologicalOrder: Boolean,
+        limit: Int?
+    ) = dataSource.getMeasurementsFlow(
+        startTime = startTime,
+        endTimeInChronologicalOrder = endTimeInChronologicalOrder,
+        limit = limit
+    )
+
+    override suspend fun hasDataForDate(utcStartTime: Long) =
+        dataSource.hasDataForDate(utcStartTime)
+
+    override fun isCompleteBaselineOrMeasurementEverCreatedFlow() =
+        dataSource.isCompleteBaselineOrMeasurementEverCreatedFlow()
+
+    override suspend fun resetBaseline() {
+        val lastEntry = dataSource.getLastEntry()
+        val currentTime = System.currentTimeMillis()
+        val timezoneOffset = TimeZone.getDefault().getOffset(currentTime)
+        val data = MapMeasurementEntity(
+            startTime = currentTime,
+            endTime = currentTime,
+            timeOffset = timezoneOffset.toLong(),
+            type = MapDataType.RESET_BASELINE,
+            measurement = null,
+        )
+        if (lastEntry?.type == MapDataType.RESET_BASELINE) {
+            dataSource.updateData(lastEntry.dataUuid, data)
+            return
+        }
+        dataSource.insertData(data)
+    }
+
+    override suspend fun deleteDataInDbWithIds(uuidList: List<String>) =
+        dataSource.deleteDataInDbWithIds(uuidList)
+}

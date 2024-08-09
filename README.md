@@ -1,43 +1,52 @@
-import io.mockk.*
-import kotlinx.coroutines.runBlocking
-import org.junit.Before
-import org.junit.Test
-import kotlin.test.assertEquals
-
-class HealthRepositoryTest {
-
-    private lateinit var stressDataSource: StressDataSource
-    private lateinit var activityDataSource: ActivityDataSource
-    private lateinit var sleepDataSource: SleepDataSource
-    private lateinit var timeProvider: TimeProvider
-    private lateinit var healthRepository: HealthRepository
+@RunWith(SDK34RobolectricGradleTestRunner::class)
+@Config(sdk = [34], shadows = [ShadowContextHolder::class])
+class MapDailyActivityDataSourceTest {
+    private val startTime = HLocalTime.getStartOfToday()
+    private val endTime = HLocalTime.getEndOfToday()
 
     @Before
+    @Throws(Exception::class)
     fun setUp() {
-        stressDataSource = mockk()
-        activityDataSource = mockk()
-        sleepDataSource = mockk()
-        timeProvider = mockk()
-        healthRepository = HealthRepository(stressDataSource, activityDataSource, sleepDataSource, timeProvider)
+        TestUtility.initRobolectricTestEnvironment()
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
     }
 
     @Test
-    fun `test mapToDailyStresses with multiple stresses on the same day`() {
-        val stress1 = Stress(endTime = 1609473600000L) // Jan 1, 2021 04:00:00 GMT
-        val stress2 = Stress(endTime = 1609477200000L) // Jan 1, 2021 05:00:00 GMT
-        val stressList = listOf(stress1, stress2)
+    fun test_daily_active_time_return_correctly() = runTest {
 
-        mockkStatic(HLocalTime::class)
-        every { HLocalTime.getStartOfDay(1609473600000L) } returns 1609459200000L // Start of Jan 1, 2021
-        every { HLocalTime.getStartOfDay(1609477200000L) } returns 1609459200000L // Start of Jan 1, 2021
+        val activeTimeMillis = 30 * 60 * 1000L
+        val goalTimeMins = 90
 
-        val result = healthRepository.mapToDailyStresses(stressList)
+        val mockCursor = mockk<Cursor>(relaxed = true).apply {
+            every { count } returns 1
+            every { close() } returns Unit
+            every { moveToFirst() } returns true
+            every { moveToNext() } returns true andThen false
+            every { getColumnIndex(ActivityDataConstants.DaySummary.DAY_TIME) } returns 0
+            every { getLong(getColumnIndex(ActivityDataConstants.DaySummary.DAY_TIME)) } returns startTime
+            every { getLong(getColumnIndex(ActivityDataConstants.DaySummary.ACTIVE_TIME)) } returns activeTimeMillis
+            every { getInt(getColumnIndex(ActivityDataConstants.DaySummary.GOAL)) } returns goalTimeMins
+            every { getInt(getColumnIndex(ActivityDataConstants.DaySummary.DAILY_ACTIVITY_GOAL)) } returns goalTimeMins
+        }
 
-        assertEquals(1, result.size)
-        assertEquals(2, result[0].stresses.size)
-        assertEquals(stress1, result[0].stresses[0])
-        assertEquals(stress2, result[0].stresses[1])
+        val mockReadResult = mockk<ReadResult>(relaxed = true).apply {
+            every { status } returns HealthResultHolder.BaseResult.STATUS_SUCCESSFUL
+            every { resultCursor } returns mockCursor
+        }
 
-        unmockkStatic(HLocalTime::class)
+        mockkStatic(RecoverableHealthDataResolver::class)
+        coEvery { RecoverableHealthDataResolver.read(any()) } returns Single.just(mockReadResult)
+
+        val sutActivityDataSource = TrackerActivityDataSourceImpl()
+        val activityList = sutActivityDataSource.queryActivities(startTime, endTime)
+
+        assertEquals("size is not correct", activityList.size, 1)
+        assertEquals("activeTime is not correct", activityList.first().activeTime, activeTimeMillis)
+        assertEquals("goal is not correct", activityList.first().goal, goalTimeMins)
     }
+
 }
